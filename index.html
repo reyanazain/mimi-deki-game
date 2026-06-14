@@ -232,12 +232,7 @@ function loadDekiSheet(){                               // potong sheet 2x2 jadi
 function loadOne(key){
   return new Promise(res=>{
     const im=new Image();
-    im.onload=()=>{ try{
-      if(key==='deki/normal_idle'){ const ct=Math.round(im.height*0.26); const c=document.createElement('canvas');
-        c.width=im.width; c.height=im.height-ct; c.getContext('2d').drawImage(im,0,ct,im.width,c.height,0,0,im.width,c.height);
-        IMG[key]=downscale(keyAndTrim(c),capFor(key)); }   // buang teks "DEKI" di atas sprite idle
-      else IMG[key]=processImg(im,key);
-    }catch(e){ IMG[key]=im; } bump(); res(); };
+    im.onload=()=>{ try{ IMG[key]=processImg(im,key); }catch(e){ IMG[key]=im; } bump(); res(); };
     im.onerror=()=>{ IMG[key]=null; bump(); res(); };
     im.src='assets/'+key+'.png';
   });
