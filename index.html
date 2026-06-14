@@ -7,7 +7,8 @@
 <title>Mimi &amp; Deki — Mini Platformer</title>
 <style>
   :root { --ui:#ffe9b8; --ink:#241a3a; }
-  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent;
+      -webkit-user-select:none; -moz-user-select:none; user-select:none; -webkit-touch-callout:none; }
   html,body { height:100%; background:#0d0a18; overflow:hidden; font-family:ui-monospace,"Courier New",monospace; color:var(--ui); }
   #wrap { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; touch-action:none; }
   canvas { image-rendering:pixelated; image-rendering:crisp-edges; display:block; background:#7ec8 f0; }
@@ -623,6 +624,7 @@ function bindPad(id,on,off){ const el=document.getElementById(id);
 bindPad('padL',()=>input.left=true,()=>input.left=false);
 bindPad('padR',()=>input.right=true,()=>input.right=false);
 bindPad('padJ',()=>{ if(!input.jump)input.jumpEdge=true; input.jump=true; },()=>input.jump=false);
+addEventListener('contextmenu', e=>e.preventDefault());   // cegah menu/seleksi saat tekan-lama di layar sentuh
 
 // resize / orientation
 function resize(){ const w=innerWidth, h=innerHeight, aspect=w/h;
