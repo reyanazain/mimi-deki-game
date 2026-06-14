@@ -9,7 +9,8 @@
   :root { --ui:#ffe9b8; --ink:#241a3a; }
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent;
       -webkit-user-select:none; -moz-user-select:none; user-select:none; -webkit-touch-callout:none; }
-  html,body { height:100%; background:#0d0a18; overflow:hidden; font-family:ui-monospace,"Courier New",monospace; color:var(--ui); }
+  html,body { height:100%; background:#0d0a18; overflow:hidden; font-family:ui-monospace,"Courier New",monospace; color:var(--ui); touch-action:none; }
+  button { touch-action:manipulation; }
   #wrap { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; touch-action:none; }
   canvas { image-rendering:pixelated; image-rendering:crisp-edges; display:block; background:#7ec8 f0; }
   /* overlays */
@@ -626,6 +627,8 @@ bindPad('padL',()=>input.left=true,()=>input.left=false);
 bindPad('padR',()=>input.right=true,()=>input.right=false);
 bindPad('padJ',()=>{ if(!input.jump)input.jumpEdge=true; input.jump=true; },()=>input.jump=false);
 addEventListener('contextmenu', e=>e.preventDefault());   // cegah menu/seleksi saat tekan-lama di layar sentuh
+let _lastTap=0; addEventListener('touchend', e=>{ const n=Date.now(); if(n-_lastTap<=320) e.preventDefault(); _lastTap=n; }, {passive:false});  // cegah double-tap zoom (iOS)
+addEventListener('gesturestart', e=>e.preventDefault());  // cegah pinch-zoom (iOS Safari)
 
 // resize / orientation
 function resize(){ const w=innerWidth, h=innerHeight, portrait=h>=w;
