@@ -40,15 +40,16 @@
          padding:10px 14px; font-size:clamp(13px,3.4vw,18px); text-shadow:2px 2px 0 #000; z-index:10; pointer-events:none; }
   #hud.on { display:flex; }
   #hud .right { display:flex; gap:14px; align-items:center; }
-  #pads { position:absolute; inset:0; display:none; z-index:15; pointer-events:none; }
+  #pads { position:absolute; left:0; right:0; bottom:0; display:none; z-index:15;
+          background:#141021; border-top:2px solid rgba(255,255,255,.14); }   /* panel kontrol terpisah */
   #pads.on { display:block; }
-  .pad { position:absolute; bottom:18px; width:74px; height:74px; border-radius:50%;
-         background:rgba(255,255,255,.16); border:3px solid rgba(255,255,255,.4); color:#fff;
-         font-size:30px; display:flex; align-items:center; justify-content:center; pointer-events:auto;
+  .pad { position:absolute; top:50%; transform:translateY(-50%); width:78px; height:78px; border-radius:50%;
+         background:rgba(255,255,255,.14); border:3px solid rgba(255,255,255,.45); color:#fff;
+         font-size:32px; display:flex; align-items:center; justify-content:center;
          touch-action:none; user-select:none; }
   .pad:active { background:rgba(255,255,255,.34); }
-  #padL { left:18px; } #padR { left:104px; } #padJ { right:18px; width:88px; height:88px; font-size:34px; bottom:14px; }
-  #mute,#fs,#pauseBtn { position:absolute; top:8px; z-index:30; pointer-events:auto; background:rgba(0,0,0,.35);
+  #padL { left:24px; } #padR { left:118px; } #padJ { right:28px; width:94px; height:94px; font-size:36px; }
+  #mute,#fs,#pauseBtn { position:absolute; top:46px; z-index:30; pointer-events:auto; background:rgba(0,0,0,.4);
           border:2px solid rgba(255,255,255,.4); color:#fff; border-radius:8px; padding:5px 9px; font-size:14px; cursor:pointer; }
   #mute{ right:10px; } #fs{ right:52px; } #pauseBtn{ right:94px; display:none; } #pauseBtn.on{ display:block; }
   #rotate { position:absolute; inset:0; display:none; align-items:center; justify-content:center; flex-direction:column;
@@ -627,14 +628,17 @@ bindPad('padJ',()=>{ if(!input.jump)input.jumpEdge=true; input.jump=true; },()=>
 addEventListener('contextmenu', e=>e.preventDefault());   // cegah menu/seleksi saat tekan-lama di layar sentuh
 
 // resize / orientation
-function resize(){ const w=innerWidth, h=innerHeight, aspect=w/h;
+function resize(){ const w=innerWidth, h=innerHeight, portrait=h>=w;
+  const PAD_H = Math.round(portrait ? Math.min(170,Math.max(116,h*0.15)) : Math.min(128,Math.max(100,h*0.30)));  // strip kontrol terpisah di bawah
+  const gh = Math.max(140, h - PAD_H), aspect = w/gh;                          // area game = layar minus strip kontrol
   if(aspect>=1){ CFG.VH=9*CFG.TILE; CFG.VW=Math.round(CFG.VH*aspect); }        // landscape: tinggi = dunia penuh (9 tile)
-  else { CFG.VW=Math.round(11*CFG.TILE); CFG.VH=Math.round(CFG.VW/aspect); }   // portrait: lebar ~11 tile, tinggi mengisi layar (langit di atas)
-  camY = 9*CFG.TILE - CFG.VH;                                                  // anchor tanah (y=288) ke bawah layar (camY<=0)
+  else { CFG.VW=Math.round(11*CFG.TILE); CFG.VH=Math.round(CFG.VW/aspect); }   // portrait: lebar ~11 tile, langit mengisi atas
+  camY = 9*CFG.TILE - CFG.VH;                                                  // anchor tanah ke bawah area game
   cv.width=CFG.VW; cv.height=CFG.VH;
-  const s=Math.min(w/CFG.VW, h/CFG.VH);
-  cv.style.position='absolute'; cv.style.width=(CFG.VW*s)+'px'; cv.style.height=(CFG.VH*s)+'px';
-  cv.style.left=((w-CFG.VW*s)/2)+'px'; cv.style.top=((h-CFG.VH*s)/2)+'px';
+  const s=Math.min(w/CFG.VW, gh/CFG.VH), cw=CFG.VW*s, ch=CFG.VH*s;
+  cv.style.position='absolute'; cv.style.width=cw+'px'; cv.style.height=ch+'px';
+  cv.style.left=((w-cw)/2)+'px'; cv.style.top=(gh-ch)+'px';                     // canvas nempel ke atas strip kontrol
+  document.getElementById('pads').style.height=PAD_H+'px';
   ctx.imageSmoothingEnabled=true;
 }
 addEventListener('resize',resize); resize();
